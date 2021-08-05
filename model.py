@@ -31,7 +31,6 @@ class Activity(keras.layers.Layer):
     def update(self, dictionary, x):
         tf.debugging.assert_all_finite(self.w, 'Check activity weights finite')
         batch_size = x.shape[0]
-        
         self.w[:batch_size].assign(self.w[:batch_size]-self.rate* \
             tf.einsum('ij, ki->kj', dictionary, (tf.einsum('ij,kj->ki', dictionary, self.w[:batch_size])-x)))
         self.shrink()
@@ -75,7 +74,8 @@ class Dictionary(keras.layers.Layer):
             self.w[:, i].assign(self.w[:, i] / tf.norm(self.w[:, i])+epsilon)
 
 def dictionary_loss(dictionary, activity, x):
-    return tf.reduce_mean(0.5*tf.square(tf.einsum('ij,kj->ki', dictionary, activity) - x))
+    batch_size = x.shape[0]
+    return tf.reduce_mean(0.5*tf.square(tf.einsum('ij,kj->ki', dictionary, activity[:batch_size]) - x))
 def sparsity_loss(activity, sparsity_coef):
     return tf.abs(activity)*sparsity_coef
 
