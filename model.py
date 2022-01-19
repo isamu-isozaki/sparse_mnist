@@ -3,6 +3,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import tensorflow_probability as tfp
 import numpy as np
+import gc
 
 def matmul_1d(a, b):
     return tf.einsum('ij,j->i', a, b)
